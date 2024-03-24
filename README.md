@@ -40,4 +40,4 @@ In a separate Ubuntu terminal, start the ember cli
 d/ember-cli
 ```
 
-Open a browser to [Google](http://localhost:4200)
+Open a browser to [http://localhost:4200](http://localhost:4200)
