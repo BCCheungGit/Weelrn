@@ -39,5 +39,8 @@ In a separate Ubuntu terminal, start the ember cli
 ```
 d/ember-cli
 ```
+You will need to create an email-password combo for the local env.
 
 Open a browser to [http://localhost:4200](http://localhost:4200)
+
+Note that for API calls, you will need to send the requests to [http://localhost:3000](http://localhost:3000), and you may need a new API key.
