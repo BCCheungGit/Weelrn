@@ -37,11 +37,12 @@ class DiscourseClient:
         except Exception as e:
             print(e)
     
-    def create_post(self, topic_id, raw):
+    def create_post(self, topic_id, raw, reply_to_post_number=None):
         try:
             post = self.client.posts.json.post({
                 "topic_id": topic_id,
                 "raw": raw,
+                "reply_to_post_number": reply_to_post_number,
             })
             print(f"Successfully created a new post with id: {post['id']}")
         except Exception as e:
@@ -53,24 +54,46 @@ class DiscourseClient:
             posts_list = posts['latest_posts']
             for post in posts_list:
                 if post['topic_id'] == topic_id:
-                    print(f"Post by: {post['username']}, ID: {post['id']}, Content: {post['raw']}, Created At: {post['created_at']}")
+                    print(f"Post by: {post['username']}, ID: {post['id']}, Content: {post['raw']}, Created At: {post['created_at']}, Reply to: {post['reply_to_post_number']}")
         except Exception as e:
             print(e)
-            
+    
+    def get_replies(self, post_id):
+        try:
+            replies = self.client.posts[post_id].json.get()
+            print(replies)
+        except Exception as e:
+            print(e)
+
+    def create_category(self, name, color, text_color, parent_category_id=None):
+        try:
+            category = self.client.categories.json.post({
+                "name": name,
+                "color": color,
+                "text_color": text_color,
+                "parent_category_id": parent_category_id
+            })
+            response = category.json()
+            print(response)
+        except Exception as e:
+            print(e)
+    
+     
         
 def main():
     load_dotenv()
-    baseurl = os.getenv("DISCOURSE_URL")
+    baseurl = os.getenv("DISCOURSE_PROD_URL")
     username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_API_KEY")
+    apikey = os.getenv("DISCOURSE_PROD_KEY")
     newclient = DiscourseClient(base_url=baseurl, username = username, api_key=apikey)
+    # newclient.list_categories()
+    # newclient.get_posts(13)
+    # newclient.create_topic("Atoms, Chemistry, and Other School Subjects", "This is a test topic", 1)
+    # newclient.get_topics()
+    # newclient.get_posts(8)
+    # newclient.create_post(8, "This is a reply to a test post", 2)
+    # newclient.create_category("Weelrn", "FF0000", "FFFFFF")  ID: 5
     newclient.list_categories()
-    newclient.get_posts(13)
-    #list_categories()
-    #create_topic()
-    # create_post()
-    # get_topics()
-    # get_posts()
     
 if __name__ == "__main__":
     main()
