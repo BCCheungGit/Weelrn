@@ -9,6 +9,8 @@ pip install -r requirements.txt
 ```
 4. Run the program
 
+You may need to change environment variables, currently they are set up for the production environment. I have other keys for the live version [https://weelrntest.discourse.group/](https://weelrntest.discourse.group/)
+
 ---
 ## Set-up using Docker and Ubuntu/Linux based system
 In Ubuntu, install docker using the following linux commands.

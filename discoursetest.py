@@ -86,14 +86,9 @@ def main():
     username = os.getenv("DISCOURSE_USERNAME")
     apikey = os.getenv("DISCOURSE_PROD_KEY")
     newclient = DiscourseClient(base_url=baseurl, username = username, api_key=apikey)
-    # newclient.list_categories()
-    # newclient.get_posts(13)
-    # newclient.create_topic("Atoms, Chemistry, and Other School Subjects", "This is a test topic", 1)
-    # newclient.get_topics()
-    # newclient.get_posts(8)
-    # newclient.create_post(8, "This is a reply to a test post", 2)
     # newclient.create_category("Weelrn", "FF0000", "FFFFFF")  ID: 5
     newclient.list_categories()
+    
     
 if __name__ == "__main__":
     main()
