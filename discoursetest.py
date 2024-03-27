@@ -39,33 +39,46 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index, params):
                 if len(replies) == 2:
                     break
                 time.sleep(5)
-            
-            
-            
+                   
+    print("Learning cycle complete")
 
+def collect_replies(category_name, topic_name):
+    load_dotenv()
+    baseurl = os.getenv("DISCOURSE_PROD_URL") 
+    username = os.getenv("DISCOURSE_USERNAME")
+    apikey = os.getenv("DISCOURSE_PROD_KEY")
+    newclient = DiscourseClient(baseurl, username, apikey)
+    category_id = newclient.list_categories()[category_name]
+    topic_id = newclient.get_topics()[topic_name]
+    posts = newclient.get_posts(topic_id)
+    replies = []
+    for post in posts:
+        if post['reply_count'] > 0:
+
+            replies.append(post['raw'])
+            replies.append(newclient.get_replies(post['id']))
+            
+    print(replies)
+    return replies
     
     
         
 def main():
-    learning_cycle(
-        "Learning Cycle 1", 
-        "The First Learning Cycle Test", 
-        "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
-        0, 
-        "replies"
-    )
-    # load_dotenv()
-    # baseurl = os.getenv("DISCOURSE_PROD_URL")
-    # username = os.getenv("DISCOURSE_USERNAME")
-    # apikey = os.getenv("DISCOURSE_PROD_KEY")
-    # newclient = DiscourseClient(baseurl, username, apikey)
-    # newclient.create_category("Learning Cycle 1", "FF0000", "FFFFFF")
-    # category_id = newclient.list_categories()["Learning Cycle 1"]
-    # newclient.create_topic("Atoms", "Atoms", category_id)
-    # topic_id = newclient.get_topics()["Atoms"]
-    # post_id = newclient.create_post(topic_id, "What is an atom?")
-    # newclient.get_replies(64)
-
+    # learning_cycle(
+    #     "Learning Cycle 1", 
+    #     "All About Atoms", 
+    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
+    #     0, 
+    #     "replies"
+    # )
+    # learning_cycle(
+    #     "Learning Cycle 2",
+    #     "All About Chemistry",
+    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE",
+    #     1,
+    #     "time"
+    # ) 
+    collect_replies("Learning Cycle 2", "All About Chemistry")
     
     
     

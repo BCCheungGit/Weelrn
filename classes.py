@@ -69,7 +69,7 @@ class DiscourseClient:
             for post in posts_list:
                 if post['topic_id'] == topic_id:
                     print(f"Post by: {post['username']}, ID: {post['id']}, Content: {post['raw']}, Created At: {post['created_at']}, Reply to: {post['reply_to_post_number']}")
- 
+            return posts_list
         except Exception as e:
             print(e)
     
@@ -96,6 +96,8 @@ class DiscourseClient:
             print(response)
         except Exception as e:
             print(e)
+    
+
 
 class GoogleSheetsClient():
     def __init__(self, token_file="token.json", credentials_file="credentials.json"):
@@ -143,6 +145,16 @@ class GoogleSheetsClient():
         questions = data["Question"].tolist()
         return questions
     
+    def post_data(self, sheet_id, sheet_name, data):
+        creds = self.authenticate()
+        gc = gspread.authorize(creds)
+        sheet = gc.open_by_key(sheet_id).worksheet(sheet_name)
+        sheet.clear()
         
+        header = ["Question", "User", "Submission Time", "Content"]
+        sheet.append_row(header)
+        for row in data:
+            sheet.append_row(row)
+        print("Data posted successfully")
 
 
