@@ -145,7 +145,7 @@ class GoogleSheetsClient():
         questions = data["Question"].tolist()
         return questions
     
-    def post_data(self, sheet_id, sheet_name, data):
+    def post_data(self, sheet_id, sheet_name, data: pd.DataFrame):
         creds = self.authenticate()
         gc = gspread.authorize(creds)
         sheet = gc.open_by_key(sheet_id).worksheet(sheet_name)
@@ -154,7 +154,7 @@ class GoogleSheetsClient():
         header = ["Question", "User", "Submission Time", "Content"]
         sheet.append_row(header)
         for row in data:
-            sheet.append_row(row)
+            pass
         print("Data posted successfully")
 
 

@@ -4,7 +4,7 @@ import os
 from classes import DiscourseClient
 from classes import GoogleSheetsClient
 import time
-  
+import pandas as pd
 
 def learning_cycle(category_name, topic_name, sheet_id, sheet_index, params):
     load_dotenv()
@@ -48,18 +48,29 @@ def collect_replies(category_name, topic_name):
     username = os.getenv("DISCOURSE_USERNAME")
     apikey = os.getenv("DISCOURSE_PROD_KEY")
     newclient = DiscourseClient(baseurl, username, apikey)
+    
+    df = pd.DataFrame(columns=["Question", "User", "Timestamp", "Answer"])
+    
     category_id = newclient.list_categories()[category_name]
     topic_id = newclient.get_topics()[topic_name]
     posts = newclient.get_posts(topic_id)
     replies = []
+    
     for post in posts:
         if post['reply_count'] > 0:
-
             replies.append(post['raw'])
             replies.append(newclient.get_replies(post['id']))
+    rows = []
+    for i in range(0, len(replies), 2):
+        question = replies[i]
+        answers = replies[i + 1]
+        for answer in answers:
+            user, timestamp, response = answer
+            rows.append({"Question": question, "User": user, "Timestamp": timestamp, "Answer": response})
             
-    print(replies)
-    return replies
+    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+    
+    return df
     
     
         
@@ -78,7 +89,8 @@ def main():
     #     1,
     #     "time"
     # ) 
-    collect_replies("Learning Cycle 2", "All About Chemistry")
+    print(collect_replies("Learning Cycle 2", "All About Chemistry"))
+    
     
     
     
