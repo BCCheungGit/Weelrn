@@ -1,5 +1,4 @@
 # Weelrn
-
 ## Set-up
 1. Clone the repository locally.
 2. Set up python virtual environment
@@ -9,10 +8,15 @@ pip install -r requirements.txt
 ```
 4. Run the program
 
-You may need to change environment variables, currently they are set up for the production environment. I have other keys for the live version [https://weelrntest.discourse.group/](https://weelrntest.discourse.group/)
+Note that all code should work as intended for the live version, as long as you change the API keys, currently they are set up for the production environment. I have other keys for the live version [https://weelrntest.discourse.group/](https://weelrntest.discourse.group/). If you would like to set up a production environment as well (highly recommended), please contact me or try following the steps below.
+
+Username key is the same, but change PROD to the normal versions, found in the env. I only pushed the env file because the repository is private, later if it goes public I will add .env to the .gitignore.
 
 ---
-## Set-up using Docker and Ubuntu/Linux based system
+## Set-up Production Environment using Docker and Ubuntu/Linux based system
+First, install Docker and Ubuntu (Either through WSL or through another method).
+
+
 In Ubuntu, install docker using the following linux commands.
 ```
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
