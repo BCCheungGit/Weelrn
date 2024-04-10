@@ -94,6 +94,7 @@ class DiscourseClient:
             })
             response = category.json()
             print(response)
+            print('successfully created a new category')
         except Exception as e:
             print(e)
     
@@ -107,6 +108,15 @@ class GoogleSheetsClient():
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
         ]
+    
+    def get_params(self, sheet_id, worksheet_number):
+        creds = self.authenticate()
+        gc = gspread.authorize(creds)
+        sheet = gc.open_by_key(sheet_id).get_worksheet(worksheet_number)
+        sheet_title = sheet.title
+        print(sheet_title)
+        return sheet_title
+        
         
     def authenticate(self):
         creds = None
@@ -148,13 +158,15 @@ class GoogleSheetsClient():
     def post_data(self, sheet_id, sheet_name, data: pd.DataFrame):
         creds = self.authenticate()
         gc = gspread.authorize(creds)
-        sheet = gc.open_by_key(sheet_id).worksheet(sheet_name)
-        sheet.clear()
+        sheet = gc.open_by_key(sheet_id)
+        try:
+            new_worksheet = sheet.worksheet(sheet_name)
+        except:
+            new_worksheet = sheet.add_worksheet(title=sheet_name, rows=100, cols=100)
         
-        header = ["Question", "User", "Submission Time", "Content"]
-        sheet.append_row(header)
-        for row in data:
-            pass
+        new_worksheet.clear()
+        new_worksheet.update([data.columns.values.tolist()] + data.values.tolist())
+
         print("Data posted successfully")
 
 

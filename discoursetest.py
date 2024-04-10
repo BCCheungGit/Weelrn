@@ -4,9 +4,24 @@ import os
 from classes import DiscourseClient
 from classes import GoogleSheetsClient
 import time
+from datetime import datetime
 import pandas as pd
+import datetime
 
-def learning_cycle(category_name, topic_name, sheet_id, sheet_index, params):
+
+
+
+
+#TODO: Implement get_params
+def get_params(sheet_id, sheet_index):
+    sheetclient = GoogleSheetsClient()
+    sheet_params = sheetclient.get_params(sheet_id, sheet_index)
+    return sheet_params
+    
+    
+
+
+def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     load_dotenv()
     baseurl = os.getenv("DISCOURSE_PROD_URL")
     username = os.getenv("DISCOURSE_USERNAME")
@@ -15,41 +30,47 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index, params):
     sheetclient = GoogleSheetsClient()
     
     questions = sheetclient.get_questions(sheet_id, sheet_index)
+    sheet_data = sheetclient.read_data(sheet_id, sheet_index)
     
-    newclient.create_category(category_name, "FF0000", "FFFFFF")
+    try:
+        newclient.list_categories()[category_name]
+    except KeyError:
+        newclient.create_category(category_name, "FF0000", "FFFFFF")
+        
     category_id = newclient.list_categories()[category_name]
-    print(category_id)
-    print(questions[0])
-    
+    print("Category id: ", category_id)
 
-    newclient.create_topic(topic_name, topic_name, category_id)
+    try:
+        newclient.get_topics()[topic_name]
+    except KeyError:
+        newclient.create_topic(topic_name, topic_name, category_id)
+        
     topic_id = newclient.get_topics()[topic_name]
-    time.sleep(10)
     
-    if params == "time":
-        for question in questions:
-            newclient.create_post(topic_id, question)
-            time.sleep(5)
-
-    elif params == "replies":
-        for question in questions:
-            post_id = newclient.create_post(topic_id, question)
-            while True:
-                replies = newclient.get_replies(post_id)
-                if len(replies) == 2:
-                    break
+    start_time = str(datetime.datetime.now(datetime.timezone.utc))
+    
+    if not sheet_data.empty:
+        for i in range(len(sheet_data)):
+            if sheet_data.loc[i, "Category"] == "Discussion Question" and sheet_data.loc[i, "Approved"] != "FALSE":
+                newclient.create_post(topic_id, sheet_data.loc[i, "Question"])
                 time.sleep(5)
-                   
+            elif sheet_data.loc[i, "Category"] == "Challenge" and sheet_data.loc[i, "Approved"] != "FALSE":
+                post_id = newclient.create_post(topic_id, sheet_data.loc[i, "Question"])
+                while True:
+                    replies = newclient.get_replies(post_id)
+                    if len(replies) == 2:
+                        break
+                    time.sleep(5)
     print("Learning cycle complete")
+    replies = collect_replies(category_name, topic_name, start_time)
 
-def collect_replies(category_name, topic_name):
+def collect_replies(category_name, topic_name, start_time):
     load_dotenv()
     baseurl = os.getenv("DISCOURSE_PROD_URL") 
     username = os.getenv("DISCOURSE_USERNAME")
     apikey = os.getenv("DISCOURSE_PROD_KEY")
     newclient = DiscourseClient(baseurl, username, apikey)
-    
-    df = pd.DataFrame(columns=["Question", "User", "Timestamp", "Answer"])
+    df = pd.DataFrame(columns=["Start Time", "Question", "User", "Timestamp", "Answer"])
     
     category_id = newclient.list_categories()[category_name]
     topic_id = newclient.get_topics()[topic_name]
@@ -64,32 +85,45 @@ def collect_replies(category_name, topic_name):
     for i in range(0, len(replies), 2):
         question = replies[i]
         answers = replies[i + 1]
-        for answer in answers:
-            user, timestamp, response = answer
-            rows.append({"Question": question, "User": user, "Timestamp": timestamp, "Answer": response})
-            
+        for user, timestamp, response in answers:
+            # Parsing and formatting timestamps
+            start_timestamp = datetime.datetime.fromisoformat(start_time.replace("+00:00", ""))
+            answer_timestamp = datetime.datetime.fromisoformat(timestamp.replace("Z", ""))
+
+            start_time_string = start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            answer_time_string = answer_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+            #Constructing row dictionary
+            row = {
+                "Start Time": start_time_string,
+                "Question": question,
+                "User": user,
+                "Timestamp": answer_time_string, 
+                "Answer": response
+            }
+            rows.append(row)
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
     
+    sheetsclient = GoogleSheetsClient()
+    sheetsclient.post_data("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
+    
     return df
+
     
     
         
 def main():
-    # learning_cycle(
-    #     "Learning Cycle 1", 
-    #     "All About Atoms", 
-    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
-    #     0, 
-    #     "replies"
-    # )
-    # learning_cycle(
-    #     "Learning Cycle 2",
-    #     "All About Chemistry",
-    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE",
-    #     1,
-    #     "time"
-    # ) 
-    print(collect_replies("Learning Cycle 2", "All About Chemistry"))
+    sheet_index = 0
+    title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
+    learning_cycle(
+        "Weelrn", 
+        title, 
+        "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
+        sheet_index,
+    )
+    # replies = collect_replies("Weelrn", title)
+    # print(replies)
+    
     
     
     
