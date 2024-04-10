@@ -17,8 +17,71 @@ def get_params(sheet_id, sheet_index):
     sheetclient = GoogleSheetsClient()
     sheet_params = sheetclient.get_params(sheet_id, sheet_index)
     return sheet_params
+
+def count_mentions(text):
+    count = 0
+    for word in text.split(" "):
+        if 'class="mention"' in word:
+            count += 1
+    return count
+
+def count_words(text):
+    if "<img src=" in text:
+        return 0
+    return len(text.split(" "))
     
     
+def collect_replies(category_name, topic_name, start_time):
+    load_dotenv()
+    baseurl = os.getenv("DISCOURSE_PROD_URL") 
+    username = os.getenv("DISCOURSE_USERNAME")
+    apikey = os.getenv("DISCOURSE_PROD_KEY")
+    newclient = DiscourseClient(baseurl, username, apikey)
+    df = pd.DataFrame(columns=["Start Time", "Time Since Start", "Question", "User", "Timestamp", "Answer", "Word Count", "Mentions"])
+    
+    category_id = newclient.list_categories()[category_name]
+    topic_id = newclient.get_topics()[topic_name]
+    posts = newclient.get_posts(topic_id)
+    replies = []
+    
+    for post in posts:
+        if post['reply_count'] > 0:
+            replies.append(post['raw'])
+            replies.append(newclient.get_replies(post['id']))
+    rows = []
+    for i in range(0, len(replies), 2):
+        question = replies[i]
+        answers = replies[i + 1]
+        for user, timestamp, response in answers:
+            # Parsing and formatting timestamps
+            start_timestamp = datetime.datetime.fromisoformat(start_time.replace("+00:00", ""))
+            answer_timestamp = datetime.datetime.fromisoformat(timestamp.replace("Z", ""))
+
+            start_time_string = start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            answer_time_string = answer_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            time_since_start = (answer_timestamp - start_timestamp).total_seconds()
+            
+            mentions = count_mentions(response)
+            
+            #Constructing row dictionary
+            row = {
+                "Start Time": start_time_string,
+                "Time Since Start": time_since_start,
+                "Question": question,
+                "User": user,
+                "Timestamp": answer_time_string, 
+                "Answer": response,
+                "Word Count": count_words(response), 
+                "Mentions": mentions,
+            }
+            rows.append(row)
+    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
+    
+    sheetsclient = GoogleSheetsClient()
+    sheetsclient.post_data("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
+    newclient.get_users()
+    return df
 
 
 def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
@@ -42,10 +105,10 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
 
     try:
         newclient.get_topics()[topic_name]
+        topic_id = newclient.get_topics()[topic_name]
     except KeyError:
         newclient.create_topic(topic_name, topic_name, category_id)
-        
-    topic_id = newclient.get_topics()[topic_name]
+        topic_id = newclient.get_topics()[topic_name]
     
     start_time = str(datetime.datetime.now(datetime.timezone.utc))
     
@@ -61,53 +124,14 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
                     if len(replies) == 2:
                         break
                     time.sleep(5)
+    
     print("Learning cycle complete")
     replies = collect_replies(category_name, topic_name, start_time)
+    
+    
+    
 
-def collect_replies(category_name, topic_name, start_time):
-    load_dotenv()
-    baseurl = os.getenv("DISCOURSE_PROD_URL") 
-    username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_PROD_KEY")
-    newclient = DiscourseClient(baseurl, username, apikey)
-    df = pd.DataFrame(columns=["Start Time", "Question", "User", "Timestamp", "Answer"])
-    
-    category_id = newclient.list_categories()[category_name]
-    topic_id = newclient.get_topics()[topic_name]
-    posts = newclient.get_posts(topic_id)
-    replies = []
-    
-    for post in posts:
-        if post['reply_count'] > 0:
-            replies.append(post['raw'])
-            replies.append(newclient.get_replies(post['id']))
-    rows = []
-    for i in range(0, len(replies), 2):
-        question = replies[i]
-        answers = replies[i + 1]
-        for user, timestamp, response in answers:
-            # Parsing and formatting timestamps
-            start_timestamp = datetime.datetime.fromisoformat(start_time.replace("+00:00", ""))
-            answer_timestamp = datetime.datetime.fromisoformat(timestamp.replace("Z", ""))
 
-            start_time_string = start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-            answer_time_string = answer_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-            #Constructing row dictionary
-            row = {
-                "Start Time": start_time_string,
-                "Question": question,
-                "User": user,
-                "Timestamp": answer_time_string, 
-                "Answer": response
-            }
-            rows.append(row)
-    df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-    
-    sheetsclient = GoogleSheetsClient()
-    sheetsclient.post_data("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
-    
-    return df
 
     
     

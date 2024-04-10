@@ -98,6 +98,17 @@ class DiscourseClient:
         except Exception as e:
             print(e)
     
+    def get_users(self):
+        try:
+            usernames = []
+            users = self.client.admin.users.list['active'].json.get()
+            for user in users:
+                usernames.append(user['username'])
+            print(usernames)
+            return usernames
+        except Exception as e:
+            print(e)
+    
 
 
 class GoogleSheetsClient():
