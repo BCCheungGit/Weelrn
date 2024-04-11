@@ -1,5 +1,8 @@
 # Weelrn
 
+A series of Python Scripts for Weelrn, to run automated learning cycles on the discussion platform [Discourse](https://www.discourse.org)
+
+
 ---
 ## Set-up Production Environment using Docker and Ubuntu/Linux based system
 1. First, install Docker and Ubuntu (Either through WSL or through another method).
