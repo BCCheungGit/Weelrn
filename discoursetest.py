@@ -12,12 +12,13 @@ import datetime
 
 
 
-#TODO: Implement get_params
+#! get_params(): returns the worksheet title of a given sheet id.
 def get_params(sheet_id, sheet_index):
     sheetclient = GoogleSheetsClient()
     sheet_params = sheetclient.get_params(sheet_id, sheet_index)
     return sheet_params
 
+#! count_mentions(): This function will count the number of mentions of another student.
 def count_mentions(text):
     count = 0
     for word in text.split(" "):
@@ -25,12 +26,14 @@ def count_mentions(text):
             count += 1
     return count
 
+#! count_words(): This function will count the number of words in a given text.
 def count_words(text):
     if "<img src=" in text:
         return 0
     return len(text.split(" "))
     
-    
+
+#! collect_replies(): This function will collect the replies to the questions posted in the Discourse forum.  
 def collect_replies(category_name, topic_name, start_time):
     load_dotenv()
     baseurl = os.getenv("DISCOURSE_PROD_URL") 
@@ -84,6 +87,9 @@ def collect_replies(category_name, topic_name, start_time):
     return df
 
 
+
+#! learning_cycle(): This function is the main function that will be called to run the learning cycle. 
+#! It will take in the category name, topic name, sheet id, and sheet index as parameters.
 def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     load_dotenv()
     baseurl = os.getenv("DISCOURSE_PROD_URL")
@@ -105,10 +111,11 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
 
     try:
         newclient.get_topics()[topic_name]
-        topic_id = newclient.get_topics()[topic_name]
+
     except KeyError:
         newclient.create_topic(topic_name, topic_name, category_id)
-        topic_id = newclient.get_topics()[topic_name]
+    
+    topic_id = newclient.get_topics()[topic_name]            
     
     start_time = str(datetime.datetime.now(datetime.timezone.utc))
     
