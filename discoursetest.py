@@ -145,8 +145,7 @@ def main():
         "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
         sheet_index,
     )
-    # replies = collect_replies("Weelrn", title)
-    # print(replies)
+
     
     
     

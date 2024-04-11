@@ -62,6 +62,6 @@ pip install -r requirements.txt
 ## TODO:
 - [x] Dockerize Main Application
 - [x] Run Learning Cycle successfully
-- [ ] Deploy the application to a cloud service (Azure, GCS, AWS)
-- [ ] Simplify and possibly add a UI
+- [ ] Sentiment Analysis (Hugging Face, NLTK)
+- [ ] Deploy the application to a cloud service (Azure)
 - [ ] Documentation
