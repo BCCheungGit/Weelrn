@@ -65,6 +65,6 @@ pip install -r requirements.txt
 ## TODO:
 - [x] Dockerize Main Application
 - [x] Run Learning Cycle successfully
-- [ ] Sentiment Analysis (Hugging Face, NLTK)
+- [x] Sentiment Analysis (NLTK)
 - [ ] Deploy the application to a cloud service (Azure)
 - [ ] Documentation
