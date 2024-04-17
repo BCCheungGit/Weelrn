@@ -8,6 +8,9 @@ from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 import gspread
 import pandas as pd
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+
 
 
 class DiscourseClient:
@@ -20,7 +23,7 @@ class DiscourseClient:
             categories = self.client.categories.json.get()
             categories_list = categories['category_list']['categories']
             for category in categories_list:
-                print(f"Category: {category['name']}, ID: {category['id']}")
+                # print(f"Category: {category['name']}, ID: {category['id']}")
                 categories_dict[category['name']] = category['id']
             return categories_dict
         except Exception as e:
@@ -44,7 +47,7 @@ class DiscourseClient:
             topics = self.client.latest.json.get()
             topics_list = topics['topic_list']['topics']
             for topic in topics_list:
-                print(f"Topic: {topic['title']}, ID: {topic['id']}")
+                # print(f"Topic: {topic['title']}, ID: {topic['id']}")
                 topics_dict[topic['title']] = topic['id']
             return topics_dict
         except Exception as e:
@@ -57,7 +60,7 @@ class DiscourseClient:
                 "raw": raw,
                 "reply_to_post_number": reply_to_post_number,
             })
-            print(f"Successfully created a new post with id: {post['id']}")
+            # print(f"Successfully created a new post with id: {post['id']}")
             return post['id']
         except Exception as e:
             print(e)
@@ -66,9 +69,9 @@ class DiscourseClient:
         try:
             posts = self.client.posts.json.get()
             posts_list = posts['latest_posts']
-            for post in posts_list:
-                if post['topic_id'] == topic_id:
-                    print(f"Post by: {post['username']}, ID: {post['id']}, Content: {post['raw']}, Created At: {post['created_at']}, Reply to: {post['reply_to_post_number']}")
+            # for post in posts_list:
+            #     if post['topic_id'] == topic_id:
+                    # print(f"Post by: {post['username']}, ID: {post['id']}, Content: {post['raw']}, Created At: {post['created_at']}, Reply to: {post['reply_to_post_number']}")
             return posts_list
         except Exception as e:
             print(e)
@@ -79,7 +82,7 @@ class DiscourseClient:
             replies_list = []
             for reply in replies:
                 replies_list.append([reply['username'], reply['created_at'], reply['cooked'].split('<p>')[1].split('</p>')[0]])
-            print(replies_list)
+            # print(replies_list)
             return replies_list
         except Exception as e:
             print(e)
@@ -93,8 +96,8 @@ class DiscourseClient:
                 "parent_category_id": parent_category_id
             })
             response = category.json()
-            print(response)
-            print('successfully created a new category')
+            #print(response)
+            #print('successfully created a new category')
         except Exception as e:
             print(e)
     
@@ -104,7 +107,7 @@ class DiscourseClient:
             users = self.client.admin.users.list['active'].json.get()
             for user in users:
                 usernames.append(user['username'])
-            print(usernames)
+            #print(usernames)
             return usernames
         except Exception as e:
             print(e)
@@ -179,5 +182,12 @@ class GoogleSheetsClient():
         new_worksheet.update([data.columns.values.tolist()] + data.values.tolist())
 
         print("Data posted successfully")
+    
+    def add_sent_analysis(self, sheet_id, sheet_name, data: pd.DataFrame):
+        sia = SentimentIntensityAnalyzer()
+        data["Sentiment"] = data["Answer"].apply(lambda x: str(sia.polarity_scores(x)))
+        print(data)
+        self.post_data(sheet_id, sheet_name, data)
+        print("Sentiment analysis added successfully")
 
 

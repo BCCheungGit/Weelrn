@@ -11,7 +11,6 @@ import datetime
 
 
 
-
 #! get_params(): returns the worksheet title of a given sheet id.
 def get_params(sheet_id, sheet_index):
     sheetclient = GoogleSheetsClient()
@@ -33,6 +32,7 @@ def count_words(text):
     return len(text.split(" "))
     
 
+
 #! collect_replies(): This function will collect the replies to the questions posted in the Discourse forum.  
 def collect_replies(category_name, topic_name, start_time):
     load_dotenv()
@@ -51,6 +51,7 @@ def collect_replies(category_name, topic_name, start_time):
         if post['reply_count'] > 0:
             replies.append(post['raw'])
             replies.append(newclient.get_replies(post['id']))
+    print(replies)
     rows = []
     for i in range(0, len(replies), 2):
         question = replies[i]
@@ -84,6 +85,8 @@ def collect_replies(category_name, topic_name, start_time):
     sheetsclient = GoogleSheetsClient()
     sheetsclient.post_data("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
     newclient.get_users()
+    #! adds sentiment analysis column
+    sheetsclient.add_sent_analysis("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
     return df
 
 
@@ -107,7 +110,6 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
         newclient.create_category(category_name, "FF0000", "FFFFFF")
         
     category_id = newclient.list_categories()[category_name]
-    print("Category id: ", category_id)
 
     try:
         newclient.get_topics()[topic_name]
@@ -119,6 +121,9 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     
     start_time = str(datetime.datetime.now(datetime.timezone.utc))
     
+    
+    
+    #! IMPORTANT: POSTS QUESTIONS AND CHALLENGES TO DISCOURSE FORUM, CHANGE PARAMETERS IF NEEDED!!
     if not sheet_data.empty:
         for i in range(len(sheet_data)):
             if sheet_data.loc[i, "Category"] == "Discussion Question" and sheet_data.loc[i, "Approved"] != "FALSE":
@@ -135,27 +140,26 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     print("Learning cycle complete")
     replies = collect_replies(category_name, topic_name, start_time)
     
-    
-    
-
-
-
-    
+    #TODO: Sentiment Analysis Goes Here!!!!
+    sheetclient.add_sent_analysis(sheet_id, topic_name, replies)
     
         
 def main():
-    sheet_index = 0
-    title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
-    learning_cycle(
-        "Weelrn", 
-        title, 
-        "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
-        sheet_index,
-    )
-
-    
-    
-    
+    # sheet_index = 0
+    # title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
+    # learning_cycle(
+    #     "Weelrn", 
+    #     title, 
+    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
+    #     sheet_index,
+    # )
+    load_dotenv()
+    baseurl = os.getenv("DISCOURSE_PROD_URL")
+    username = os.getenv("DISCOURSE_USERNAME")
+    apikey = os.getenv("DISCOURSE_PROD_KEY")
+    newclient = DiscourseClient(baseurl, username, apikey)
+    start_time = str(datetime.datetime.now(datetime.timezone.utc))
+    collect_replies("Weelrn", "All About Atoms", start_time)
     
     
 if __name__ == "__main__":
