@@ -140,26 +140,23 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     print("Learning cycle complete")
     replies = collect_replies(category_name, topic_name, start_time)
     
-    #TODO: Sentiment Analysis Goes Here!!!!
-    sheetclient.add_sent_analysis(sheet_id, topic_name, replies)
-    
         
 def main():
-    # sheet_index = 0
-    # title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
-    # learning_cycle(
-    #     "Weelrn", 
-    #     title, 
-    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
-    #     sheet_index,
-    # )
-    load_dotenv()
-    baseurl = os.getenv("DISCOURSE_PROD_URL")
-    username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_PROD_KEY")
-    newclient = DiscourseClient(baseurl, username, apikey)
-    start_time = str(datetime.datetime.now(datetime.timezone.utc))
-    collect_replies("Weelrn", "All About Atoms", start_time)
+    sheet_index = 0
+    title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
+    learning_cycle(
+        "Weelrn", 
+        title, 
+        "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
+        sheet_index,
+    )
+    # load_dotenv()
+    # baseurl = os.getenv("DISCOURSE_PROD_URL")
+    # username = os.getenv("DISCOURSE_USERNAME")
+    # apikey = os.getenv("DISCOURSE_PROD_KEY")
+    # newclient = DiscourseClient(baseurl, username, apikey)
+    # start_time = str(datetime.datetime.now(datetime.timezone.utc))
+    # collect_replies("Weelrn", "All About Atoms", start_time)
     
     
 if __name__ == "__main__":
