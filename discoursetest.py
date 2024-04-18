@@ -36,9 +36,9 @@ def count_words(text):
 #! collect_replies(): This function will collect the replies to the questions posted in the Discourse forum.  
 def collect_replies(category_name, topic_name, start_time):
     load_dotenv()
-    baseurl = os.getenv("DISCOURSE_PROD_URL") 
+    baseurl = os.getenv("DISCOURSE_HOST") 
     username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_PROD_KEY")
+    apikey = os.getenv("DISCOURSE_KEY")
     newclient = DiscourseClient(baseurl, username, apikey)
     df = pd.DataFrame(columns=["Start Time", "Time Since Start", "Question", "User", "Timestamp", "Answer", "Word Count", "Mentions"])
     
@@ -95,9 +95,9 @@ def collect_replies(category_name, topic_name, start_time):
 #! It will take in the category name, topic name, sheet id, and sheet index as parameters.
 def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     load_dotenv()
-    baseurl = os.getenv("DISCOURSE_PROD_URL")
+    baseurl = os.getenv("DISCOURSE_HOST")
     username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_PROD_KEY")
+    apikey = os.getenv("DISCOURSE_KEY")
     newclient = DiscourseClient(baseurl, username, apikey)
     sheetclient = GoogleSheetsClient()
     
@@ -142,21 +142,23 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
     
         
 def main():
-    sheet_index = 0
-    title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
-    learning_cycle(
-        "Weelrn", 
-        title, 
-        "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
-        sheet_index,
-    )
-    # load_dotenv()
-    # baseurl = os.getenv("DISCOURSE_PROD_URL")
-    # username = os.getenv("DISCOURSE_USERNAME")
-    # apikey = os.getenv("DISCOURSE_PROD_KEY")
+    # sheet_index = 0
+    # title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
+    # learning_cycle(
+    #     "Weelrn", 
+    #     title, 
+    #     "1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", 
+    #     sheet_index,
+    # )
+    load_dotenv()
+    baseurl = os.getenv("DISCOURSE_HOST")
+    username = os.getenv("DISCOURSE_USERNAME")
+    apikey = os.getenv("DISCOURSE_KEY")
+    # print(baseurl, username, apikey)
     # newclient = DiscourseClient(baseurl, username, apikey)
-    # start_time = str(datetime.datetime.now(datetime.timezone.utc))
-    # collect_replies("Weelrn", "All About Atoms", start_time)
+    # newclient.list_categories()
+    start_time = str(datetime.datetime.now(datetime.timezone.utc))
+    collect_replies("Weelrn", "All About Atoms", start_time)
     
     
 if __name__ == "__main__":

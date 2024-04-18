@@ -40,14 +40,19 @@ You will need to create an email-password combo for the local env.
 
 Open a browser to [http://localhost:4200](http://localhost:4200)
 
-Note that for API calls, you will need to send the requests to [http://localhost:3000](http://localhost:3000), and you may need a new API key.
+Note that for API calls, you will need to send the requests to [http://localhost:3000](http://localhost:3000), and you will need to add api keys.
+```
+DISCOURSE_USERNAME = "username created at first start-up"
+DISCOURSE_HOST = "http://localhost:3000"
+DISCOURSE_KEY = "Go to API and create a new key"
+```
 
 Once these steps are complete, you will be able to run the Python Scripts in this repository.
 
 For future use, you will need to start the docker container, then open two Ubuntu terminals and run the commands in steps 5 and 6 again.
 
-## Set-up
-1. Before completing Set-up, please set up the local environment following the above steps.
+## Running Scripts
+1. Before running scripts, please set up the local environment following the above steps.
 2. Clone the repository locally.
 3. Set up python virtual environment
 Example for Windows / Git Bash (What I use):
