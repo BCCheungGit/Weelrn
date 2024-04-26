@@ -2,6 +2,10 @@
 
 A series of Python Scripts for Weelrn, to run automated learning cycles on the discussion platform [Discourse](https://www.discourse.org)
 
+---
+Docker Image for Discourse
+
+The image for Discourse that was created for Weelrn can be found at this dockerhub link: [DockerHub](https://hub.docker.com/repository/docker/cheungben/weelrn_discourse/general)
 
 ---
 ## Set-up Production Environment using Docker and Ubuntu/Linux based system
@@ -65,12 +69,13 @@ source venv/Scripts/Activate
 pip install -r requirements.txt
 ```
 5. Run the program
-
+```
+flask run
+```
 
 ## TODO:
 - [x] Dockerize Main Application
 - [x] Run Learning Cycle successfully
 - [x] Sentiment Analysis (NLTK)
-- [ ] Deploy the application to a cloud service (Azure)
-- [ ] Add a button to the original Ruby on Rails code to run the Python Scripts
+- [x] Flask Frontend
 - [ ] Documentation
