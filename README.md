@@ -56,7 +56,7 @@ For future use, you will need to start the docker container, then open two Ubunt
 2. Clone the repository locally.
 3. Set up python virtual environment
 Example for Windows / Git Bash (What I use):
-```
+``` 
 pythom -m venv venv
 source venv/Scripts/Activate
 ```
@@ -72,4 +72,5 @@ pip install -r requirements.txt
 - [x] Run Learning Cycle successfully
 - [x] Sentiment Analysis (NLTK)
 - [ ] Deploy the application to a cloud service (Azure)
+- [ ] Add a button to the original Ruby on Rails code to run the Python Scripts
 - [ ] Documentation

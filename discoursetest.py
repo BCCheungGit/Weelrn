@@ -93,12 +93,12 @@ def collect_replies(category_name, topic_name, start_time):
 
 #! learning_cycle(): This function is the main function that will be called to run the learning cycle. 
 #! It will take in the category name, topic name, sheet id, and sheet index as parameters.
-def learning_cycle(category_name, topic_name, sheet_id, sheet_index):
-    load_dotenv()
-    baseurl = os.getenv("DISCOURSE_HOST")
-    username = os.getenv("DISCOURSE_USERNAME")
-    apikey = os.getenv("DISCOURSE_KEY")
-    newclient = DiscourseClient(baseurl, username, apikey)
+def learning_cycle(category_name, topic_name, sheet_id, sheet_index, api_url, api_key, username):
+    # load_dotenv()
+    # baseurl = os.getenv("DISCOURSE_HOST")
+    # username = os.getenv("DISCOURSE_USERNAME")
+    # apikey = os.getenv("DISCOURSE_KEY")
+    newclient = DiscourseClient(api_url, username, api_key)
     sheetclient = GoogleSheetsClient()
     
     questions = sheetclient.get_questions(sheet_id, sheet_index)

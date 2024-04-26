@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'index.css') }}">
+    <title>Weelrn Discourse Scripts</title>
+</head>
+<body>
+    <h1>Wellrn Discourse Scripts</h1>
+    <form action="/run-script" method="POST">
+        <label for="category_name">Category Name</label>
+        <input type="text" id="category_name" name="category_name" required>
+
+        <label for="topic_name">Topic Name</label>
+        <input type="text" id="topic_name" name="topic_name" required>
+
+        <label for="sheet_id">Sheet ID</label>
+        <input type="text" id="sheet_id" name="sheet_id" required>
+
+        <label for="sheet_index">Sheet Index</label>
+        <input type="text" id="sheet_index" name="sheet_index" required>
+    
+        <label for="api_url">Url of Discourse Instance</label>
+        <input type="text" id="api_url" name="api_url" required>
+
+        <label for="api_key">Discourse API Key</label>
+        <input type="text" id="api_key" name="api_key" required>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <button type="submit">Run Script</button>
+
+    </form>
+</body>
+</html>
