@@ -73,6 +73,13 @@ pip install -r requirements.txt
 flask run
 ```
 
+## Tech Stack:
+- Flask
+- Natural Language Toolkit
+- Docker
+- Discourse API, Google Sheets API
+- Pandas/Numpy
+
 ## TODO:
 - [x] Dockerize Main Application
 - [x] Run Learning Cycle successfully
