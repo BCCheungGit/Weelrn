@@ -34,7 +34,7 @@ def count_words(text):
 
 
 #! collect_replies(): This function will collect the replies to the questions posted in the Discourse forum.  
-def collect_replies(category_name, topic_name, start_time):
+def collect_replies(category_name, topic_name, start_time, post_sheet_id):
     load_dotenv()
     baseurl = os.getenv("DISCOURSE_HOST") 
     username = os.getenv("DISCOURSE_USERNAME")
@@ -83,17 +83,17 @@ def collect_replies(category_name, topic_name, start_time):
     df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
     
     sheetsclient = GoogleSheetsClient()
-    sheetsclient.post_data("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
+    sheetsclient.post_data(post_sheet_id, topic_name, df)
     newclient.get_users()
     #! adds sentiment analysis column
-    sheetsclient.add_sent_analysis("18o8TFdohAnvxUbD6pMB4USQdpUeLoKpyNnf5iAsKxlU", topic_name, df)
+    sheetsclient.add_sent_analysis(post_sheet_id, topic_name, df)
     return df
 
 
 
 #! learning_cycle(): This function is the main function that will be called to run the learning cycle. 
 #! It will take in the category name, topic name, sheet id, and sheet index as parameters.
-def learning_cycle(category_name, topic_name, sheet_id, sheet_index, api_url, api_key, username):
+def learning_cycle(category_name, topic_name, sheet_id, sheet_index, api_url, api_key, username, post_sheet_id):
     # load_dotenv()
     # baseurl = os.getenv("DISCOURSE_HOST")
     # username = os.getenv("DISCOURSE_USERNAME")
@@ -138,10 +138,13 @@ def learning_cycle(category_name, topic_name, sheet_id, sheet_index, api_url, ap
                     time.sleep(5)
     
     print("Learning cycle complete")
-    replies = collect_replies(category_name, topic_name, start_time)
+    replies = collect_replies(category_name, topic_name, start_time, post_sheet_id)
     
         
 def main():
+    pass
+    ## Testing purposes
+    
     # # sheet_index = 0
     # # title = get_params("1Iy6LzGU1yQ_I4u9o0ueEC3ZrzypOk-d_Jlxq2cLkKsE", sheet_index)
     # # learning_cycle(
